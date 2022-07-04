@@ -19,45 +19,48 @@
     <span jhiTranslate="blogJhipsterApp.post.home.notFound">No posts found</span>
   </div>
 
-  <div class="table-responsive" id="entities" *ngIf="posts && posts.length > 0">
-    <table class="table table-striped" aria-describedby="page-heading">
-      <thead>
-        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="reset()">
-          <th scope="col" jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="title">
-            <span jhiTranslate="blogJhipsterApp.post.title">Title</span> <fa-icon icon="sort"></fa-icon>
-          </th>
-          <th scope="col" jhiSortBy="content">
-            <span jhiTranslate="blogJhipsterApp.post.content">Content</span> <fa-icon icon="sort"></fa-icon>
-          </th>
-          <th scope="col" jhiSortBy="date"><span jhiTranslate="blogJhipsterApp.post.date">Date</span> <fa-icon icon="sort"></fa-icon></th>
-          <th scope="col" jhiSortBy="blog.name">
-            <span jhiTranslate="blogJhipsterApp.post.blog">Blog</span> <fa-icon icon="sort"></fa-icon>
-          </th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <tbody infinite-scroll (scrolled)="loadPage(page + 1)" [infiniteScrollDisabled]="page >= links['last']" [infiniteScrollDistance]="0">
-        <tr *ngFor="let post of posts; trackBy: trackId" data-cy="entityTable">
-          <td>
-            <a >{{ post.id }}</a>
-          </td>
-          <td>{{ post.title }}</td>
-          <td>{{ post.content }}</td>
-          <td>{{ post.date | formatMediumDatetime }}</td>
-          <td>
-            <div *ngIf="post.blog">
-              <a >{{ post.blog?.name }}</a>
-            </div>
-          </td>
-          <td class="text-end">
-            <div class="btn-group">
-    
-              
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div *ngFor="let blog of listBlogs;" >
+    <h2 id="page-heading" data-cy="PostHeading">
+      <span >{{blog.title}}</span>
+    </h2>
+    <div class="table-responsive" id="entities" *ngIf="posts && posts.length > 0">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="reset()">
+            <th scope="col" jhiSortBy="tag">
+              <span jhiTranslate="blogJhipsterApp.post.tag">Tag</span> <fa-icon icon="sort"></fa-icon></th>
+            <th scope="col" jhiSortBy="title">
+              <span jhiTranslate="blogJhipsterApp.post.title">Title</span> <fa-icon icon="sort"></fa-icon>
+            </th>
+            <th scope="col" jhiSortBy="content">
+              <span jhiTranslate="blogJhipsterApp.post.content">Content</span> <fa-icon icon="sort"></fa-icon>
+            </th>
+            <th scope="col" jhiSortBy="date"><span jhiTranslate="blogJhipsterApp.post.date">Date</span> <fa-icon icon="sort"></fa-icon></th>
+            
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody infinite-scroll (scrolled)="loadPage(page + 1)" [infiniteScrollDisabled]="page >= links['last']" [infiniteScrollDistance]="0">
+          <tr *ngFor="let post of blog.data; trackBy: trackId" data-cy="entityTable">
+            <td>
+              <div *ngFor="let tag of post.tags;">
+                <a >{{ tag.name }}</a>
+              </div>
+            </td>
+            <td>{{ post.title }}</td>
+            <td>{{ post.content }}</td>
+            <td>{{ post.date | formatMediumDatetime }}</td>
+           
+            <td class="text-end">
+              <div class="btn-group">
+      
+                
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
+
 </div>

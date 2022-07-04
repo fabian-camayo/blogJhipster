@@ -16,6 +16,7 @@ import { PostService } from '../entities/post/service/post.service';
 import { PostDeleteDialogComponent } from '../entities/post/delete/post-delete-dialog.component';
 import { DataUtils } from 'app/core/util/data-util.service';
 import { ParseLinks } from 'app/core/util/parse-links.service';
+import { any } from 'cypress/types/bluebird';
 
 @Component({
   selector: 'jhi-home',
@@ -23,6 +24,7 @@ import { ParseLinks } from 'app/core/util/parse-links.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  listBlogs: any[];
   posts: IPost[];
   isLoading = false;
   itemsPerPage: number;
@@ -36,12 +38,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private accountService: AccountService, 
-    private router: Router,    
+    private accountService: AccountService,
+    private router: Router,
     protected postService: PostService,
     protected dataUtils: DataUtils,
     protected modalService: NgbModal,
     protected parseLinks: ParseLinks) {
+    this.listBlogs = [];
     this.posts = [];
     this.itemsPerPage = ITEMS_PER_PAGE;
     this.page = 0;
@@ -72,6 +75,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
   reset(): void {
     this.page = 0;
+    this.listBlogs = [];
     this.posts = [];
     this.loadAll();
   }
@@ -125,9 +129,23 @@ export class HomeComponent implements OnInit, OnDestroy {
       };
     }
     if (data) {
+
+      const listtitleBlogs = [];
       for (const d of data) {
+        listtitleBlogs.push(d.blog?.name);
         this.posts.push(d);
       }
+      const dataArr = new Set(listtitleBlogs);
+      const titleBlogs = [...dataArr];
+
+      const TemplistPostBlogs = [];
+      for(const b of titleBlogs){
+        TemplistPostBlogs.push({"title":String(b),"data":data.filter(post => post.blog?.name === b)});
+      }
+      this.listBlogs = TemplistPostBlogs;
+     
+      // eslint-disable-next-line no-console
+      console.log(this.listBlogs);
     }
   }
 }
