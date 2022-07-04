@@ -50,7 +50,9 @@ public class PostResource {
      * {@code POST  /posts} : Create a new post.
      *
      * @param post the post to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new post, or with status {@code 400 (Bad Request)} if the post has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and
+     * with body the new post, or with status {@code 400 (Bad Request)} if the
+     * post has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/posts")
@@ -61,9 +63,9 @@ public class PostResource {
         }
         Post result = postRepository.save(post);
         return ResponseEntity
-            .created(new URI("/api/posts/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+                .created(new URI("/api/posts/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
 
     /**
@@ -71,14 +73,15 @@ public class PostResource {
      *
      * @param id the id of the post to save.
      * @param post the post to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated post,
-     * or with status {@code 400 (Bad Request)} if the post is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the post couldn't be updated.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with
+     * body the updated post, or with status {@code 400 (Bad Request)} if the
+     * post is not valid, or with status {@code 500 (Internal Server Error)} if
+     * the post couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/posts/{id}")
     public ResponseEntity<Post> updatePost(@PathVariable(value = "id", required = false) final Long id, @Valid @RequestBody Post post)
-        throws URISyntaxException {
+            throws URISyntaxException {
         log.debug("REST request to update Post : {}, {}", id, post);
         if (post.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
@@ -93,26 +96,28 @@ public class PostResource {
 
         Post result = postRepository.save(post);
         return ResponseEntity
-            .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, post.getId().toString()))
-            .body(result);
+                .ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, post.getId().toString()))
+                .body(result);
     }
 
     /**
-     * {@code PATCH  /posts/:id} : Partial updates given fields of an existing post, field will ignore if it is null
+     * {@code PATCH  /posts/:id} : Partial updates given fields of an existing
+     * post, field will ignore if it is null
      *
      * @param id the id of the post to save.
      * @param post the post to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated post,
-     * or with status {@code 400 (Bad Request)} if the post is not valid,
-     * or with status {@code 404 (Not Found)} if the post is not found,
-     * or with status {@code 500 (Internal Server Error)} if the post couldn't be updated.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with
+     * body the updated post, or with status {@code 400 (Bad Request)} if the
+     * post is not valid, or with status {@code 404 (Not Found)} if the post is
+     * not found, or with status {@code 500 (Internal Server Error)} if the post
+     * couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/posts/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PatchMapping(value = "/posts/{id}", consumes = {"application/json", "application/merge-patch+json"})
     public ResponseEntity<Post> partialUpdatePost(
-        @PathVariable(value = "id", required = false) final Long id,
-        @NotNull @RequestBody Post post
+            @PathVariable(value = "id", required = false) final Long id,
+            @NotNull @RequestBody Post post
     ) throws URISyntaxException {
         log.debug("REST request to partial update Post partially : {}, {}", id, post);
         if (post.getId() == null) {
@@ -127,25 +132,25 @@ public class PostResource {
         }
 
         Optional<Post> result = postRepository
-            .findById(post.getId())
-            .map(existingPost -> {
-                if (post.getTitle() != null) {
-                    existingPost.setTitle(post.getTitle());
-                }
-                if (post.getContent() != null) {
-                    existingPost.setContent(post.getContent());
-                }
-                if (post.getDate() != null) {
-                    existingPost.setDate(post.getDate());
-                }
+                .findById(post.getId())
+                .map(existingPost -> {
+                    if (post.getTitle() != null) {
+                        existingPost.setTitle(post.getTitle());
+                    }
+                    if (post.getContent() != null) {
+                        existingPost.setContent(post.getContent());
+                    }
+                    if (post.getDate() != null) {
+                        existingPost.setDate(post.getDate());
+                    }
 
-                return existingPost;
-            })
-            .map(postRepository::save);
+                    return existingPost;
+                })
+                .map(postRepository::save);
 
         return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, post.getId().toString())
+                result,
+                HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, post.getId().toString())
         );
     }
 
@@ -153,13 +158,15 @@ public class PostResource {
      * {@code GET  /posts} : get all the posts.
      *
      * @param pageable the pagination information.
-     * @param eagerload flag to eager load entities from relationships (This is applicable for many-to-many).
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of posts in body.
+     * @param eagerload flag to eager load entities from relationships (This is
+     * applicable for many-to-many).
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     * list of posts in body.
      */
     @GetMapping("/posts")
     public ResponseEntity<List<Post>> getAllPosts(
-        @org.springdoc.api.annotations.ParameterObject Pageable pageable,
-        @RequestParam(required = false, defaultValue = "true") boolean eagerload
+            @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+            @RequestParam(required = false, defaultValue = "true") boolean eagerload
     ) {
         log.debug("REST request to get a page of Posts");
         Page<Post> page;
@@ -176,7 +183,8 @@ public class PostResource {
      * {@code GET  /posts/:id} : get the "id" post.
      *
      * @param id the id of the post to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the post, or with status {@code 404 (Not Found)}.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with
+     * body the post, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/posts/{id}")
     public ResponseEntity<Post> getPost(@PathVariable Long id) {
@@ -196,8 +204,33 @@ public class PostResource {
         log.debug("REST request to delete Post : {}", id);
         postRepository.deleteById(id);
         return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
-            .build();
+                .noContent()
+                .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+                .build();
+    }
+
+    /**
+     * {@code GET  /posts/public} : get all the posts.
+     *
+     * @param pageable the pagination information.
+     * @param eagerload flag to eager load entities from relationships (This is
+     * applicable for many-to-many).
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the
+     * list of posts in body.
+     */
+    @GetMapping("/posts/public")
+    public ResponseEntity<List<Post>> getAllPostsPublic(
+            @org.springdoc.api.annotations.ParameterObject Pageable pageable,
+            @RequestParam(required = false, defaultValue = "true") boolean eagerload
+    ) {
+        log.debug("REST request to get a page of Posts");
+        Page<Post> page;
+        if (eagerload) {
+            page = postRepository.findAllWithEagerRelationships(pageable);
+        } else {
+            page = postRepository.findAll(pageable);
+        }
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 }
